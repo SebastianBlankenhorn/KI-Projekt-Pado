@@ -27,18 +27,49 @@ public class Main {
         //Instances data = getARFF_File("D:/UNI/KI/Git/KI-Projekt-Pado/sarcasm.arff");
 
         datensatz =  data;
-        attributHinzufuegen("anzWorte");
-        attributBearbeiten(1,2,3);
-        getBewertung(2, 3);
+        
+        
+        //getBewertung(2, 3);
         //System.out.println(datensatz);
         wortAnzahlHinzufuegen();
+        zeichenAnzahlHinzufuegen();
+        anzahlSpecialCharacterHinzufuegen();
         speichern();
     }
     
     private String getToken(int instanz) {
     	return datensatz.instance(instanz).stringValue(2);
     }
+    private void anzahlSpecialCharacterHinzufuegen() {
+    	attributHinzufuegen("anzSonderzeichen");
+    	int count = 0;
+    	String token = null;
+    	
+    	for (int i = 0; i < datensatz.numAttributes(); i++) {
+    		token = getToken(i).replace(" ", "");
+    		for(int j=0; j < token.length(); j++)
+    	    {    
+    			if(token.substring(j , j+1).matches("[^A-Za-z0-9]")) {
+    	            count++;
+    	    	}
+    	    }
+    		attributBearbeiten(i, 5, count);
+    		
+    	}
+    }
+    
+    private void zeichenAnzahlHinzufuegen() {
+    	attributHinzufuegen("anzZeichen");
+    	int zeichenAnzahl = 0;
+		String token = null;
+    	for (int i = 0; i < datensatz.numAttributes(); i++) {
+    		token = getToken(i);
+    		zeichenAnzahl = token.replace(" ", "").length();
+    		attributBearbeiten(i,4, zeichenAnzahl);
+    	}
+    }
     private void wortAnzahlHinzufuegen() {
+    	attributHinzufuegen("anzWorte");
     	int wortanzahl = 0;
     	String token;
 		for (int i = 0; i < datensatz.numAttributes(); i++) {
