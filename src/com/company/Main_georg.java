@@ -45,7 +45,7 @@ public class Main {
     	int count = 0;
     	String token = null;
     	
-    	for (int i = 0; i < datensatz.numAttributes(); i++) {
+    	for (int i = 0; i < datensatz.numInstances(); i++) {
     		token = getToken(i).replace(" ", "");
     		for(int j=0; j < token.length(); j++)
     	    {    
@@ -62,7 +62,7 @@ public class Main {
     	attributHinzufuegen("anzZeichen");
     	int zeichenAnzahl = 0;
 		String token = null;
-    	for (int i = 0; i < datensatz.numAttributes(); i++) {
+    	for (int i = 0; i < datensatz.numInstances(); i++) {
     		token = getToken(i);
     		zeichenAnzahl = token.replace(" ", "").length();
     		attributBearbeiten(i,4, zeichenAnzahl);
@@ -72,7 +72,7 @@ public class Main {
     	attributHinzufuegen("anzWorte");
     	int wortanzahl = 0;
     	String token;
-		for (int i = 0; i < datensatz.numAttributes(); i++) {
+		for (int i = 0; i < datensatz.numInstances(); i++) {
 				token = getToken(i);
 			
 			if (token == null || token.isEmpty()) {
