@@ -4,6 +4,7 @@ import weka.core.*;
 import weka.core.converters.ArffSaver;
 import weka.core.converters.ArffLoader.ArffReader;
 
+import weka.core.Attribute;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,7 +14,7 @@ public class Main {
 
 	Instances datensatz;
 	int anzAttribute = 3;
-	String neuerDatensatzpath = "D:/UNI/KI/DatensatzeSaver/NeuerDatensatz.arff";
+	//String neuerDatensatzpath = "/home/sebastian/Documents/NeuerDatensatz.arff";
 
 	public static void main(String[] args) throws Exception {
 		Main programm = new Main(args[0]);
@@ -21,12 +22,13 @@ public class Main {
 
 	public Main(String filename) throws Exception {
 		Instances data = new Instances(new BufferedReader(new FileReader(filename)));
-		// Instances data = getARFF_File("D:/UNI/KI/Git/KI-Projekt-Pado/sarcasm.arff");
+		//// Instances data = getARFF_File("D:/UNI/KI/Git/KI-Projekt-Pado/sarcasm.arff");
 
 		datensatz = data;
 
 		// getBewertung(2, 3);
 		// System.out.println(datensatz);
+		//Features
 		wortAnzahlHinzufuegen();
 		zeichenAnzahlHinzufuegen();
 		anzahlSpecialCharacterHinzufuegen();
@@ -35,13 +37,24 @@ public class Main {
 		speichern();
 	}
 
+	private void attributeProWort(Attribute attribute) {
+		int anzAtt, anzWorte;
+		Attribute attributeNew = attributHinzufuegen(attribute.name() + "/Wort");
+		for (int i = 0; i < datensatz.numInstances(); i++) {
+			anzAtt = Integer.parseInt(datensatz.instance(i).toString(attribute));
+			System.out.println(datensatz.instance(i).toString(attribute) + "/" + datensatz.instance(i).toString(datensatz.attribute("anzWorte")) + datensatz.instance(i).stringValue(2));
+			anzWorte = Integer.parseInt(datensatz.instance(i).toString(datensatz.attribute("anzWorte")));
+			attributBearbeiten(i, attributeNew, anzAtt / anzWorte);
+		}
+	}
+
 	private String getToken(int instanz) {
 		return datensatz.instance(instanz).stringValue(2);
 	}
 
 	private void anzahlSuffixHinzufuegen(String suffix) {
 		String attName = "anzEndetMit_" + suffix;
-		attributHinzufuegen(attName);
+		Attribute attribute = attributHinzufuegen(attName);
 		int cnt = 0;
 		String words[];
 		for (int i = 0; i < datensatz.numInstances(); i++) {
@@ -51,14 +64,14 @@ public class Main {
 				if (words[j].endsWith(suffix))
 					cnt++;
 			}
-			attributBearbeiten(i, anzAttribute, cnt);
+			attributBearbeiten(i, attribute, cnt);
 			cnt = 0;
 		}
-
+		attributeProWort(attribute);
 	}
 
 	private void anzahlSpecialCharacterHinzufuegen() {
-		attributHinzufuegen("anzSonderzeichen");
+		Attribute attribute = attributHinzufuegen("anzSonderzeichen");
 		int count = 0;
 		String token = null;
 
@@ -69,24 +82,25 @@ public class Main {
 					count++;
 				}
 			}
-			attributBearbeiten(i, anzAttribute, count);
-
+			attributBearbeiten(i, attribute, count);
 		}
+		attributeProWort(attribute);
 	}
 
 	private void zeichenAnzahlHinzufuegen() {
-		attributHinzufuegen("anzZeichen");
+		Attribute attribute = attributHinzufuegen("anzZeichen");
 		int zeichenAnzahl = 0;
 		String token = null;
 		for (int i = 0; i < datensatz.numInstances(); i++) {
 			token = getToken(i);
 			zeichenAnzahl = token.replace(" ", "").length();
-			attributBearbeiten(i, anzAttribute, zeichenAnzahl);
+			attributBearbeiten(i, attribute, zeichenAnzahl);
 		}
+		attributeProWort(attribute);
 	}
 
 	private void wortAnzahlHinzufuegen() {
-		attributHinzufuegen("anzWorte");
+		Attribute attribute = attributHinzufuegen("anzWorte");
 		int wortanzahl = 0;
 		String token;
 		for (int i = 0; i < datensatz.numInstances(); i++) {
@@ -97,20 +111,21 @@ public class Main {
 			} else {
 				String[] words = token.split("\\s+");
 				wortanzahl = words.length;
-				attributBearbeiten(i, anzAttribute, wortanzahl);
+				attributBearbeiten(i, attribute, wortanzahl);
 			}
 		}
 	}
 
-	private void attributHinzufuegen(String nameAttribut) {
+	private Attribute attributHinzufuegen(String nameAttribut) {
 		datensatz.insertAttributeAt(new Attribute(nameAttribut), ++anzAttribute);
+		return datensatz.attribute(nameAttribut);
 	}
 
-	private void attributBearbeiten(int i, int attributIndex, int value) {
-		datensatz.instance(i).setValue(attributIndex, value);
+	private void attributBearbeiten(int i, Attribute attribute, int value) {
+		datensatz.instance(i).setValue(attribute, value);
 	}
 
-	private void getBewertung(int i, int attribute) {
+	private void getBewertung(int i, Attribute attribute) {
 		System.out.println(datensatz.instance(i).stringValue(attribute));
 	}
 
