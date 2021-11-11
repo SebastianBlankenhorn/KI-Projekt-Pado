@@ -5,6 +5,7 @@ import weka.core.converters.ArffSaver;
 import weka.core.converters.ArffLoader.ArffReader;
 
 import weka.core.Attribute;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,8 +14,8 @@ import java.io.IOException;
 public class Main {
 
 	Instances datensatz;
-	int anzAttribute = 3;
-	//String neuerDatensatzpath = "/home/sebastian/Documents/NeuerDatensatz.arff";
+	int anzAttribute = 2;
+	String neuerDatensatzpath = "/home/sebastian/Documents/Studium/KI/KI-Projekt-Pado/sarcasm_dev_1.arff";
 
 	public static void main(String[] args) throws Exception {
 		Main programm = new Main(args[0]);
@@ -29,11 +30,16 @@ public class Main {
 		// getBewertung(2, 3);
 		// System.out.println(datensatz);
 		//Features
-		wortAnzahlHinzufuegen();
-		zeichenAnzahlHinzufuegen();
-		anzahlSpecialCharacterHinzufuegen();
+		anzahlWorteHinzufuegen();
+		anzahlZeichenHinzufuegen();
+		anzahlSonderzeichenHinzufuegen();
 		anzahlSuffixHinzufuegen("ing");
 		anzahlSuffixHinzufuegen("ed");
+		anzahlEinzelnerSonderzeichenHinzufuegen('?', "Fragezeichen");
+		anzahlEinzelnerSonderzeichenHinzufuegen('!', "Ausrufezeichen");
+		anzahlEinzelnerSonderzeichenHinzufuegen('.', "Punkt");
+		anzahlEinzelnerSonderzeichenHinzufuegen(',', "Komma");
+		entferneUrspruenglicheAttribute();
 		speichern();
 	}
 
@@ -42,7 +48,7 @@ public class Main {
 		Attribute attributeNew = attributHinzufuegen(attribute.name() + "/Wort");
 		for (int i = 0; i < datensatz.numInstances(); i++) {
 			anzAtt = Integer.parseInt(datensatz.instance(i).toString(attribute));
-			System.out.println(datensatz.instance(i).toString(attribute) + "/" + datensatz.instance(i).toString(datensatz.attribute("anzWorte")) + datensatz.instance(i).stringValue(2));
+			//System.out.println(datensatz.instance(i).toString(attribute) + "/" + datensatz.instance(i).toString(datensatz.attribute("anzWorte")) + datensatz.instance(i).stringValue(2));
 			anzWorte = Integer.parseInt(datensatz.instance(i).toString(datensatz.attribute("anzWorte")));
 			attributBearbeiten(i, attributeNew, anzAtt / anzWorte);
 		}
@@ -58,7 +64,7 @@ public class Main {
 		int cnt = 0;
 		String words[];
 		for (int i = 0; i < datensatz.numInstances(); i++) {
-			words = getToken(i).split(" ");
+			words = getToken(i).split(" ,.!?");
 			for (int j = 0; j < words.length; j++) {
 
 				if (words[j].endsWith(suffix))
@@ -70,7 +76,7 @@ public class Main {
 		attributeProWort(attribute);
 	}
 
-	private void anzahlSpecialCharacterHinzufuegen() {
+	private void anzahlSonderzeichenHinzufuegen() {
 		Attribute attribute = attributHinzufuegen("anzSonderzeichen");
 		int count = 0;
 		String token = null;
@@ -83,11 +89,30 @@ public class Main {
 				}
 			}
 			attributBearbeiten(i, attribute, count);
+			count = 0;
 		}
 		attributeProWort(attribute);
 	}
 
-	private void zeichenAnzahlHinzufuegen() {
+	private void anzahlEinzelnerSonderzeichenHinzufuegen(char zeichen, String zeichenName) {
+		Attribute attribute = attributHinzufuegen("anz" + zeichenName);
+		int count = 0;
+		String token = null;
+
+		for (int i = 0; i < datensatz.numInstances(); i++) {
+			token = getToken(i).replace(" ", "");
+			for (int j = 0; j < token.length(); j++) {
+				if (token.substring(j, j + 1).matches("[" + zeichen + "]")) {
+					count++;
+				}
+			}
+			attributBearbeiten(i, attribute, count);
+			count = 0;
+		}
+		attributeProWort(attribute);
+	}
+
+	private void anzahlZeichenHinzufuegen() {
 		Attribute attribute = attributHinzufuegen("anzZeichen");
 		int zeichenAnzahl = 0;
 		String token = null;
@@ -99,7 +124,7 @@ public class Main {
 		attributeProWort(attribute);
 	}
 
-	private void wortAnzahlHinzufuegen() {
+	private void anzahlWorteHinzufuegen() {
 		Attribute attribute = attributHinzufuegen("anzWorte");
 		int wortanzahl = 0;
 		String token;
@@ -127,6 +152,10 @@ public class Main {
 
 	private void getBewertung(int i, Attribute attribute) {
 		System.out.println(datensatz.instance(i).stringValue(attribute));
+	}
+
+	private void entferneUrspruenglicheAttribute() {
+		datensatz.deleteStringAttributes();
 	}
 
 	private void speichern() throws IOException {
