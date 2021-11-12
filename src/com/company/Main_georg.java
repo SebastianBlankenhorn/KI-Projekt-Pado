@@ -35,6 +35,7 @@ public class Main {
 		anzahlSonderzeichenHinzufuegen();
 		anzahlSuffixHinzufuegen("ing");
 		anzahlSuffixHinzufuegen("ed");
+		anzahlWorteInCapsHinzufuegen();
 		anzahlEinzelnerSonderzeichenHinzufuegen('?', "Fragezeichen");
 		anzahlEinzelnerSonderzeichenHinzufuegen('!', "Ausrufezeichen");
 		anzahlEinzelnerSonderzeichenHinzufuegen('.', "Punkt");
@@ -57,7 +58,32 @@ public class Main {
 	private String getToken(int instanz) {
 		return datensatz.instance(instanz).stringValue(2);
 	}
+	private void anzahlWorteInCapsHinzufuegen() {
+		Attribute attribute = attributHinzufuegen("anzWorteInCaps");
+		int wortanzahl = 0;
+		String token;
+		Pattern p = Pattern.compile("\\b[A-Z]{3,}\\b"); //Mit midestens 3 capsbuchstaben
+		Matcher m;
+		for (int i = 0; i < datensatz.numInstances(); i++) {
+			token = getToken(i);
+			token.split(" ,.!?");
 
+			if (token == null || token.isEmpty()) {
+				wortanzahl = 0;
+				 //System.out.println("keine caps in Instanz " + i );
+			} else {
+				m = p.matcher(token);
+				while (m.find()) {
+					wortanzahl++;
+				    String word = m.group();
+				    //System.out.println(word + "  ist in instanz: " + i);
+				}
+			}
+			//System.out.println(wortanzahl);
+			attributBearbeiten(i, attribute, wortanzahl);
+			wortanzahl = 0;
+		}
+	}
 	private void anzahlSuffixHinzufuegen(String suffix) {
 		String attName = "anzEndetMit_" + suffix;
 		Attribute attribute = attributHinzufuegen(attName);
