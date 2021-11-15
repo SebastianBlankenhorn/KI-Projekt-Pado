@@ -40,12 +40,12 @@ public class Main {
 		anzahlEinzelnerSonderzeichenHinzufuegen('!', "Ausrufezeichen");
 		anzahlEinzelnerSonderzeichenHinzufuegen('.', "Punkt");
 		anzahlEinzelnerSonderzeichenHinzufuegen(',', "Komma");
-		entferneUrspruenglicheAttribute();
 		anzahlGesuchtesWort("joke");
 		anzahlGesuchtesWort("irony");
 		anzahlGesuchtesWort("ironic");
 		anzahlGesuchtesWort("sarcassm");
 		anzahlGesuchtesWort("kidding");
+		entferneUrspruenglicheAttribute();
 		speichern();
 	}
 
