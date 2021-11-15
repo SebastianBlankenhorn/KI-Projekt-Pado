@@ -41,9 +41,41 @@ public class Main {
 		anzahlEinzelnerSonderzeichenHinzufuegen('.', "Punkt");
 		anzahlEinzelnerSonderzeichenHinzufuegen(',', "Komma");
 		entferneUrspruenglicheAttribute();
+		anzahlGesuchtesWort("joke");
+		anzahlGesuchtesWort("irony");
+		anzahlGesuchtesWort("ironic");
+		anzahlGesuchtesWort("sarcassm");
+		anzahlGesuchtesWort("kidding");
 		speichern();
 	}
 
+	private void anzahlGesuchtesWort(String wort) {
+		Attribute attribute = attributHinzufuegen("anzWort_" + wort);
+		wort = (" " + wort + " ");
+		int wortanzahl;
+		String token;
+		int index;
+		for (int i = 0; i < datensatz.numInstances(); i++) {
+			token = getToken(i);
+			token.replaceAll("[^a-zA-Z0-9]+"," ");
+			wortanzahl = 0;
+			index = 0;
+			if (token == null || token.isEmpty()) {
+				wortanzahl = 0;
+			} else {
+				while(index != -1){
+
+				    index = token.indexOf(wort,index);
+
+				    if(index != -1){
+				        wortanzahl ++;
+				        index += wort.length();
+				    }
+				}
+			}
+			attributBearbeiten(i, attribute, wortanzahl);
+		}
+	}
 	private void attributeProWort(Attribute attribute) {
 		int anzAtt, anzWorte;
 		Attribute attributeNew = attributHinzufuegen(attribute.name() + "/Wort");
