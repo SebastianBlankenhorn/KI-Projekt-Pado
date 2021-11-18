@@ -55,10 +55,59 @@ public class Main {
 		anzahlGesuchtesWort("who");
 		anzahlGesuchtesWort("which");
 		anzahlGesuchtesWort("whose");
+		anzahlLetterPatternQuadruple();
+		anzahlLetterPatternTripplet();
 		entferneUrspruenglicheAttribute();
 		speichern();
 	}
 
+	private void anzahlLetterPatternQuadruple() {
+		Attribute attribute = attributHinzufuegen("anzPatternQoudruple");
+		int cnt;
+		String token;
+		for (int i = 0; i < datensatz.numInstances(); i++) {
+			token = getToken(i);
+			cnt = 0;
+			if (token == null || token.isEmpty()) {
+				cnt = 0;
+			} else {
+				for (int j = 0; j < token.length() - 3; j++)
+			    {
+			        if (token.charAt(j) == token.charAt(j + 1) &&
+			        		token.charAt(j) == token.charAt(j + 2) &&
+			        		token.charAt(j) == token.charAt(j + 3))
+			        {
+			            cnt++;
+
+			        }
+			    }
+			}
+			attributBearbeiten(i, attribute, cnt);
+		}
+	}
+	private void anzahlLetterPatternTripplet() {
+		Attribute attribute = attributHinzufuegen("anzPatternTripple");
+		int cnt;
+		String token;
+		for (int i = 0; i < datensatz.numInstances(); i++) {
+			token = getToken(i);
+			cnt = 0;
+			if (token == null || token.isEmpty()) {
+				cnt = 0;
+			} else {
+				for (int j = 0; j < token.length() - 3; j++)
+			    {
+			        if (token.charAt(j) == token.charAt(j + 1) && 
+			        		token.charAt(j) == token.charAt(j + 2))
+			        {
+			            cnt++;
+
+			        }
+			    }
+			}
+			attributBearbeiten(i, attribute, cnt);
+		}
+	}
 	private void anzahlGesuchtesWort(String wort) {
 		Attribute attribute = attributHinzufuegen("anzWort_" + wort);
 		wort = (" " + wort + " ");
