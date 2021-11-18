@@ -2,7 +2,6 @@ package KI;
 
 import weka.core.*;
 import weka.core.converters.ArffSaver;
-import weka.core.converters.ArffLoader.ArffReader;
 
 import weka.core.Attribute;
 
@@ -10,12 +9,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
 	Instances datensatz;
 	int anzAttribute = 2;
-	String neuerDatensatzpath = "/home/sebastian/Documents/Studium/KI/KI-Projekt-Pado/sarcasm_dev_1.arff";
+	String neuerDatensatzpath = "P:\\KI\\Data\\sarcasm_dev_1.arff";
 
 	public static void main(String[] args) throws Exception {
 		Main programm = new Main(args[0]);
@@ -35,6 +36,9 @@ public class Main {
 		anzahlSonderzeichenHinzufuegen();
 		anzahlSuffixHinzufuegen("ing");
 		anzahlSuffixHinzufuegen("ed");
+		anzahlSuffixHinzufuegen("s");
+		anzahlSuffixHinzufuegen("y");
+		anzahlSuffixHinzufuegen("ied");
 		anzahlWorteInCapsHinzufuegen();
 		anzahlEinzelnerSonderzeichenHinzufuegen('?', "Fragezeichen");
 		anzahlEinzelnerSonderzeichenHinzufuegen('!', "Ausrufezeichen");
@@ -43,8 +47,14 @@ public class Main {
 		anzahlGesuchtesWort("joke");
 		anzahlGesuchtesWort("irony");
 		anzahlGesuchtesWort("ironic");
-		anzahlGesuchtesWort("sarcassm");
+		anzahlGesuchtesWort("sarcasm");
 		anzahlGesuchtesWort("kidding");
+		anzahlGesuchtesWort("this");
+		anzahlGesuchtesWort("these");
+		anzahlGesuchtesWort("those");
+		anzahlGesuchtesWort("who");
+		anzahlGesuchtesWort("which");
+		anzahlGesuchtesWort("whose");
 		entferneUrspruenglicheAttribute();
 		speichern();
 	}
@@ -75,12 +85,13 @@ public class Main {
 			}
 			attributBearbeiten(i, attribute, wortanzahl);
 		}
+		attributeProWort(attribute);
 	}
 	private void attributeProWort(Attribute attribute) {
 		int anzAtt, anzWorte;
 		Attribute attributeNew = attributHinzufuegen(attribute.name() + "/Wort");
 		for (int i = 0; i < datensatz.numInstances(); i++) {
-			anzAtt = Integer.parseInt(datensatz.instance(i).toString(attribute));
+			anzAtt = Integer.parseInt(datensatz.instance(i).toString(attribute)) * 1000;
 			//System.out.println(datensatz.instance(i).toString(attribute) + "/" + datensatz.instance(i).toString(datensatz.attribute("anzWorte")) + datensatz.instance(i).stringValue(2));
 			anzWorte = Integer.parseInt(datensatz.instance(i).toString(datensatz.attribute("anzWorte")));
 			attributBearbeiten(i, attributeNew, anzAtt / anzWorte);
@@ -115,6 +126,7 @@ public class Main {
 			attributBearbeiten(i, attribute, wortanzahl);
 			wortanzahl = 0;
 		}
+		attributeProWort(attribute);
 	}
 	private void anzahlSuffixHinzufuegen(String suffix) {
 		String attName = "anzEndetMit_" + suffix;
@@ -221,12 +233,5 @@ public class Main {
 		saver.setInstances(datensatz);
 		saver.setFile(new File(neuerDatensatzpath));
 		saver.writeBatch();
-	}
-
-	private Instances getARFF_File(String path) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(path));
-		ArffReader arff = new ArffReader(reader);
-		Instances data = arff.getData();
-		return data;
 	}
 }
